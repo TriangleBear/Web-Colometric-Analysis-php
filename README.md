@@ -70,29 +70,17 @@ This project is part of the thesis titled "Colorimetric Analysis of Urine Test S
 
 ```
 urine_interpret/
-│
-├── Datasets/
-│   ├── Test test/
-│   │   ├── images/
-│   │   ├── labels/
-│   │   └── test/
-│   └── ...
-├── Train/
-│   ├── config.py
-│   ├── datasets.py
-│   ├── losses.py
-│   ├── main.py
-│   ├── models.py
-│   ├── train_unet.py
-│   ├── utils.py
-│   └── test_pass.py
-├── Old/
-│   ├── test_modelUnet.py
-│   └── TrainUNetSVMrbf.py
-├── models/
-│   └── ... (saved models)
-├── README.md
-└── requirements.txt
+├── automation/          # Automation scripts
+├── datasets/            # Dataset-related files
+├── models/              # Model definitions and saved models
+├── php/                 # PHP files
+├── tests/               # Unit and integration tests
+├── train/               # Training scripts and configurations
+├── utils/               # Utility functions
+├── assets/              # Static assets like images or XML files
+├── requirements.txt     # Python dependencies
+├── README.md            # Project documentation
+└── .gitignore           # Git ignore rules
 ```
 
 ## Disclaimer
