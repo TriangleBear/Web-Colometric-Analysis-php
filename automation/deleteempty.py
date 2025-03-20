@@ -34,8 +34,7 @@ def delete_empty_annotation_files_with_images(labels_folder, images_folder, imag
 
     print(f"Total empty annotation files deleted: {deleted_files_count}")
 
-# Replace these paths with your actual paths
-labels_folder_path = "D:\\Programming\\Urine_Test_Strips\\urine\\train\\labels"
-images_folder_path = "D:\\Programming\\Urine_Test_Strips\\urine\\train\\images"
-
-delete_empty_annotation_files_with_images(labels_folder_path, images_folder_path)
+if __name__ == "__main__":
+    labels_folder_path = "../datasets/urine/train/labels"
+    images_folder_path = "../datasets/urine/train/images"
+    delete_empty_annotation_files_with_images(labels_folder_path, images_folder_path)
