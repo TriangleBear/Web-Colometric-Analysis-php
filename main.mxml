@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:sg="com.adobe.flex.extras.controls.springgraph.*" 
+	xmlns:local="*" 
+	layout="absolute"
+	creationComplete="onCreationComplete()"
+	backgroundColor="#FFFFFF">
+	
+	<mx:Style source="/assets/style.css"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import com.rubenswieringa.interactivemindmap.*;
+			
+			private var fullscreenListenerAdded:Boolean = false;
+			
+			private function onCreationComplete ():void {
+				Controller.boot(this.springGraph, "assets/mindmap.xml");
+				Security.allowDomain("rubenswieringa.com");
+			}
+			
+			private function fullscreen (event:Event=null):void {
+				if(!this.fullscreenListenerAdded){
+					this.fullscreenListenerAdded = true;
+					Application.application.stage.addEventListener(Event.FULLSCREEN, this.onFullscreen);
+				}
+				Application.application.stage.displayState = StageDisplayState.FULL_SCREEN;
+			}
+			
+			private function onFullscreen (event:Event):void {
+				this.fullscreenButton.visible = (Application.application.stage.displayState == StageDisplayState.NORMAL);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!-- TODO: option to add logo -->
+	<!-- TODO: use addItemEffect & removeItemEffect -->
+	<!-- TODO: phased expansion -->
+	<!-- TODO: create url-functionality? -->
+	
+	<mx:Label id="usemeText" text="use me!" fontSize="{Application.application.height/5}" 
+		fontFamily="Trebuchet MS" fontWeight="bold" alpha=".1" 
+		x="{Application.application.width-usemeText.width-150}" 
+		y="{Application.application.height-usemeText.height-100}" />
+	
+	<sg:SpringGraph id="springGraph" width="100%" height="100%" repulsionFactor="2" 
+		dataProvider="{Controller.instance.graph}" 
+		itemRenderer="com.rubenswieringa.interactivemindmap.NodeRendererShell" />
+	
+	<mx:Label id="credits" 
+		text="door Ruben Swieringa (www.rubenswieringa.com) en Sytse Kooistra (www.sytsevliegen.nl), 2007"  
+		x="{Application.application.width-credits.width-20}" y="{Application.application.height-credits.height-15}" />
+	
+	<mx:Button id="fullscreenButton" label="fullscreen" click="fullscreen()" />
+	
+</mx:Application>

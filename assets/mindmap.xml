@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<mindmap>
+	<words>
+		<word value="Next Web minor" type="main">
+			<word value="technieken" type="main">
+				<word value="databases">
+					<word value="MySQL" description="MySQL is een open source relationele database management systeem (RDBMS), dat gebruik maakt van SQL." />
+				</word>
+				<word value="XML" description="eXtensible Markup Language (XML) is een bepaalde manier om gegevens gestructureerd vast te leggen. Deze manier is gedefinieerd en mag iedereen gebruiken. Het is ontworpen om zowel door een programma als door een mens leesbaar te zijn."/>
+				<word value="frameworks/libraries" id="framelib" description="Een framework is een geheel van softwarecomponenten dat gebruikt kan worden bij het programmeren van applicaties. Echter ook afspraken hoe die componenten gebruikt worden binnen een groep ontwikkelaars en welke code-standaarden en libraries gebruikt worden kunnen ook onderdeel zijn van een framework."/>
+				<word value="JavaScript" description="JavaScript is een scripttaal met object-georiënteerde mogelijkheden. Deze geïnterpreteerde programmeertaal is vooral gericht op het gebruik op het wereldwijde web."/>
+				<word value="CSS" description="Cascading Style Sheets (afgekort tot CSS) is een techniek voor de stijl (vormgeving) van webpagina's. De informatie over de vormgeving wordt toegevoegd aan de HTML-code van het document."/>
+				<word value="HTML" description="HyperText Markup Language (afgekort HTML) is een computertaal (meer specifiek, een opmaaktaal) voor de specificatie van documenten op het World Wide Web."/>
+				<word value="Adobe Flash" description="Adobe Flash is een computerprogramma (voorheen bekend als Macromedia Flash en daarvoor FutureSplash) waarmee animaties, (korte) webvideo's en webapplicaties (zoals spelletjes en gehele websites) gemaakt kunnen worden."/>
+				<word value="programmeren">
+					<word value="PHP" description="PHP is een scripttaal, die bedoeld is om op webservers dynamische webpagina's te creëren."/>
+					<word value="Ruby on Rails" description="Ruby on Rails, ook vaak RoR of eenvoudigweg Rails genoemd,is een open source web applicatie framework, geschreven in Ruby."/>
+					<word value="AJAX" description="AJAX (Asynchronous Javascript And XML) is een term voor het ontwerp van interactieve webpagina's waarin asynchroon gevraagde gegevens worden opgehaald van de webserver."/>
+					<word value="Actionscript" description="ActionScript is de scripttaal van Adobe Flash. Door ActionScript toe te voegen kun je interactieve filmpjes of animaties, spelletjes en geavanceerde toepassingen maken. Met Flash AS (waarbij AS de afkorting is van ActionScript) is het ook mogelijk om externe dingen in je Flash-bestand te laden, zoals plaatjes en geluiden."/>
+					<word value="Microsoft Silverlight" id="mssilverlight" description="(code-named Windows Presentation Foundation/Everywhere or WPF/E) is a proprietary runtime for browser-based Rich Internet Applications, providing a subset of the animation, vector graphics, and video playback capabilities of Windows Presentation Foundation." />
+					<word value="Adobe Flex" description="Adobe Flex (voorheen Macromedia Flex genoemd) is een clientapplicatie waarmee met behulp van Macromedia Flex Markup Language (MXML) cliëntinterfaces gebouwd kunnen worden en bepaald worden hoe ze gaan functioneren met de back-end. Er kunnen met MXML en Actionscript 3.0 volledige Rich Internet Applications (RIA's) gebouwd worden die door middel van de Flash Player kunnen worden bekeken op de cliënt."/>
+					<word value="OpenLaszlo" description="OpenLaszlo is an open source platform for the development and delivery of rich Internet applications. It is released under the Open Source Initiative-certified Common Public License." />
+				</word>
+			</word>
+			<word value="producten" id="tools" type="main">
+				<word value="YouTube" description="YouTube is een website voor het kosteloos uploaden, bekijken en delen van videofilms door gebruikers. Het motto van deze website is YouTube, Broadcast Yourself. De uploader kan de film voorzien van tags (trefwoorden) die een niet-hiërarchische classificering mogelijk maken (folksonomie)." />
+				<word value="Last.fm" description="Last.fm project houdt zich bezig met het bijhouden van statistieken omtrent de muziek waar men naar luistert. Via speciale software kan het programma de titels en artiesten uit een digitaal geluidsmedium aflezen en in een database opslaan. Deze gegevens worden bijgehouden en op het internet gepubliceerd, waarna mensen aan de hand van muziekstijl met elkaar in contact kunnen komen."/>
+				<word value="OpenID" description="OpenID is een gedecentraliseerd authenticatiemechanisme om Single Sign-on op het Internet mogelijk te maken. Als een iemand gebruik maakt van OpenID, dan hoeft die persoon voor het inloggen op een website geen gebruikersnaam en wachtwoord te onthouden, maar dan volstaat het om met de openID identiteit in te loggen" />
+				<word value="LinkedIn" description="sociaal netwerk dat gericht is op professionals. In juli 2007 waren er wereldwijd meer dan 12 miljoen geregistreerde gebruikers. LinkedIn groeit de laatste jaren zeer sterk, en binnen Europa met name in Nederland. Het belangrijkste doel van de site is om geregistreerde gebruikers elkaar te laten profiteren van elkaars (zakelijke) netwerk. Dat gebeurt door je te verbinden (connecten) met andere gebruikers die je vertrouwt."/>
+				<word value="FaceBook" description="Facebook is een Amerikaanse social-networkingsite voor onder andere middelbare scholen, universiteiten en bedrijven. Het wordt voornamelijk in Engelssprekende landen gebruikt en is zeer populair onder Amerikaanse studenten. In Nederland wordt Facebook ook steeds populairder, waar het concurrent is van bijvoorbeeld Hyves." />
+				<word value="Flickr" descripton="Flickr is een website voor het delen van (digitale) foto's. Bij het uploaden van foto's kan er ook worden opgegeven onder welke voorwaarden (licentie) anderen de foto mogen gebruiken. Ook kunnen foto's in een privégedeelte worden geplaatst, dat alleen te bekijken is door gebruikers die daarvoor toestemming van de uploader hebben. Het uploaden kan ook via e-mail of een mobiele telefoon."/>
+				<word value="Wikipedia" descripton="Het doel van Wikipedia is om in elke taal een complete, rechtenvrije encyclopedie op het web te creëren. De artikelen in deze encyclopedie worden geacht een neutraal gezichtspunt in te nemen. Omdat de artikelen door elke bezoeker bewerkt kunnen worden, geeft Wikipedia echter geen garantie wat betreft de juistheid van de informatie. Daarnaast is vanwege het open karakter van het project vandalisme een probleem."/>
+				<word value="Twitter" description="Twitter is een populaire dienst die vanuit de Verenigde Staten is komen overwaaien naar Europa. Het combineert webloggen met instant messaging en wordt daarom wel micro blogging genoemd. De basisvraag van de dienst is 'Waar ben je nu mee bezig?'. Er zijn ook mensen die vooraf aankondigen dat zij bij een evenement aanwezig zijn en met anderen, al dan niet aanwezig bij het evenement, willen twitteren. Dit creëert een virtuele aanwezigheid."/>
+				<word value="del.icio.us" description="del.icio.us is een zogenaamde social bookmarking-site: een website om favoriete bookmarks op te slaan en te delen met andere gebruikers." />
+				<word value="BlinkList" description="Vergelijkbaar met del.icio.us; social bookmarking"/>
+				<word value="OpenSocial" description="OpenSocial is a set of common application programming interfaces (APIs) for web-based social network applications, developed by Google, and released November 1, 2007. Applications implementing the OpenSocial APIs will be interoperable with any social network system that supports them, including features on sites such as MySpace, Friendster and Hyves." />
+				<word value="Google Maps" description="Google Maps, voorheen genaamd Google Local, is een dienst van Google Inc. die de mogelijkheid biedt om het zoeken te beperken door alleen te zoeken in een specifieke geografische locatie." />
+				<word value="iGoogle" description="iGoogle is bedoeld als online startpagina waar vanuit je het internet opgaat. Door items aan de pagina toe te voegen heb je een gepersonaliseerde startpagina met links naar favoriete websites, het weerbericht, RSS-feeds van vele websites en wordt er een overzicht gegeven van de laatst ontvangen e-mails (alleen voor Gmail)." />
+				<word value="Netvibes" description="De site maakt gebruik van AJAX om modules te plaatsen, in te laden en te rangschikken. Naast een verzameling van zeer diverse modules is het ook mogelijk Netvibes te gebruiken als online RSS lezer en kunnen verschillende tabs aangemaakt worden." />
+			</word>
+			<word value="web2.0" type="main">
+				<word value="social bookmarking" description="Social bookmarking is een methode om via internet bookmarks ofwel favorieten te delen." />
+				<word value="buzzwords" description="Een buzzwoord (of, op zijn Engels, buzzword) is een woord dat een nieuw snufje of werkwijze aanduidt, waar heel veel van verwacht wordt. Het woord 'buzzwoord' is waarschijnlijk afkomstig van het woord to buzz, wat 'gonzen' of 'geroezemoes' betekent. Een 'buzzwoord' is dus eigenlijk iets waar iedereen over praat - het gonst ervan."/>
+				<word value="wiki's" description="Met het begrip wiki of wiki wiki wordt een verzameling van een bepaald type hypertext-documenten aangeduid alsook de software die gebruikt wordt om deze te realiseren. Een wiki is een applicatie of (web)toepassing, waarmee webdocumenten gezamenlijk kunnen worden bewerkt. Een bekend voorbeeld van een wiki is Wikipedia. De term is afgeleid van het woord wiki wiki, wat komt uit het Hawaïaans en de betekenis van 'snel, vlug, beweeglijk' heeft." />
+				<word value="microblogging" description="Micro-blogging is a form of blogging that allows users to write brief text updates (usually less than 200 characters) and publish them, either to be viewed by anyone or by a restricted group which can be chosen by the user. These messages can be submitted by a variety of means, including text messaging, instant messaging, email, MP3 or the web." />
+				<word value="blogs" id="blogs" description="Een weblog, of ook wel blog, is een website die regelmatig - soms meerdere keren per dag - vernieuwd wordt en waarop de geboden informatie in chronologische volgorde (op datum) wordt weergegeven. Wie een weblog bezoekt, treft dan ook op de voorpagina de recentste bijdrage(n) aan. De auteur, ook wel blogger genoemd, biedt in feite een logboek van informatie die hij wil delen met zijn publiek, de bezoekers van zijn weblog."/>
+				<word value="API's" description="Een Application Programming Interface (API) is een verzameling definities op basis waarvan een computerprogramma kan communiceren met een ander programma of onderdeel (meestal in de vorm van bibliotheken). Vaak vormen API's de scheiding tussen verschillende lagen van abstractie, zodat applicaties op een hoog niveau van abstractie kunnen werken en het minder abstracte werk uitbesteden aan andere API's. Hierdoor hoeft bijvoorbeeld een tekenprogramma niet te weten hoe het de printer moet aansturen, maar roept het daarvoor een gespecialiseerd stuk software aan in een bibliotheek, via een afdruk-API."/>
+				<word value="widgets" description="Widgets is de algemene naam voor de elementen waaruit een grafische interface kan worden opgebouwd (vensters, menu's, knoppen, keuzerondje). Tegenwoordig wordt de term widget veelal gebruikt voor de kleine desktopapplicaties die we onder andere terug vinden in Apple's Dashboard, SuperKaramba (KDE) en DesktopX (Microsoft Windows, hier zijn ze gadgets genoemd). Deze kleine applicaties voeren eenvoudige en veelvoorkomende taken uit en geven snel toegang tot veelgevraagde informatie. Een voorbeeld van dit soort widgets is een kleine kalender of een kleine nieuwsfeedlezer." />
+				<word value="RIA" description="Een Rich Internet Application (ook afgekort tot RIA) is een term die gebruikt wordt voor interactieve internetapplicaties, die het gevoel geven van een desktopprogramma (bijvoorbeeld een tekstverwerker of een agenda). Rich Internet Applications geven de gebruiker, zonder dat een andere pagina wordt geopend, respons op de ingevoerde gegevens." />
+				<word value="RSS" description="Really Simple Syndication. Een RSS feed laat aan de RSS readers zien wat er nieuw is op de site. Hierdoor kunnen mensen vanuit hun RSS reader op een deeplink klikken naar de onderwerpen die hem/haar aanspreekt. Maakt gebruik van XML (zie xml)."/>
+				<word value="tagging" id="tagging" description="describing the content of a web page in one or more simple words (tags). Often known as key words in academic articles." />
+				<word value="user-generated content" description="User-generated content (letterlijk vertaald: gebruikers-gegenereerde inhoud) is een inhoudelijke bijdrage van een niet-professionele gebruiker aan een online medium. Dit in tegenstelling tot de traditionele manier, waar professionele mensen in dienst van een mediabedrijf de inhoud van een media produceren. Voorbeelden van user-generated content zijn bijvoorbeeld foto's, video's of audioopnames. Maar ook recensies, weblogs of recepten zouden geschaard kunnen worden onder het begrip 'user-generated content'." />
+				<word value="open source" description="Open source beschrijft de praktijk die in productie en ontwikkeling vrije toegang geeft tot de bronmaterialen (de source) van het eindproduct. Sommige mensen zien het als een filosofie, anderen beschouwen het als een pragmatische methodologie" />
+				<word value="social software" description="Sociale software is te definiëren als ‘software die de online interactie tussen mensen mogelijk maakt, virtuele relaties faciliteert, virtuele omgevingen creëert waar mensen samen kunnen werken of virtuele gemeenschappen kunnen vormen’. In brede zin omvat de term verouderde media zoals e-mail en ‘instant messaging’ , maar sommigen beperken de betekenis tot de recentere media, zoals ‘blogs’ en ‘wikis’ en social bookmarking." />
+				<word value="communities" description="A community is a social group of organisms sharing an environment, normally with shared interests. In human communities, intent, belief, resources, preferences, needs, risks and a number of other conditions may be present and common, affecting the identity of the participants and their degree of cohesiveness." />
+			</word>
+			<word value="werkwijze" id="werkwijze" type="main">
+				<word value="presentaties" description="Door middel van presentaties wordt er kennis gedeeld binnen de minor."/>
+				<word value="minor-uitjes" description="Om het 'community-gevoel' te versterken worden er af en toe minor-uitjes georganiseerd."/>
+				<word value="minor-bijeenkomsten" description="Tijdens minor-bijeenkomsten wordt er algemene informatie verstrekt en de voortgang van de projecten besproken" />
+				<word value="assessments" description="Mondelinge toetsing of een student competent is in een bepaald vakgebied."/>
+				<word value="collaboration" id="collaboration" description="Omdat de studenten binnen de minor enorm veel kennis hebben, wordt er veel samengewerkt en gedeeld." />
+				<word value="vraaggestuurd onderwijs" description="Studenten kunnen zelf aangeven op welk vakgebeid ze ondersteuning nodig hebben. Hier wordt dan een college voor georganiseerd of, indien nodig, een gastdocent voor aangetrokken."/>
+				<word value="flowchart" description="Een grafische gestructureerde representatie van de flow van een proces (bv navigatiestructuur)" />
+				<word value="wireframe" description="In web design, wireframes are a basic visual guide used to suggest the layout and placement of fundamental design elements in the interface design. Because of this they must be completed before any artwork is developed. When completed correctly they will provide a visual reference upon which to structure each page." />
+				<word value="functioneel ontwerp" id="fo" description="Document waarin de functionaliteit van een product (bijv. een website) gedetailleerd worden beschreven. Hierbij valt te denken aan schermschetsen e.d." />
+				<word value="grafisch ontwerp" id="go" description="Document waarin de grafische elementen binnen een product (bijv. een website) worden toegelicht." />
+				<word value="technisch ontwerp" id="to" description="Document waarin de technische details van een product (bijv. een website) worden beschreven en toegelicht. Hierbij valt te denken aan databases e.d." />
+				<word value="Rapid Prototyping" id="prototyping" description="Rapid prototyping is een verzamelbegrip voor het snel (en:rapid = snel) vervaardigen van fysieke prototypen. Rapid prototypen gaat uit van virtuele computer informatie, verkregen via het CAD proces, die vertaald wordt in een fysiek product." />
+				<word value="gastdocenten" />
+				<word value="gastcolleges" />
+			</word>
+			<word value="theorien" id="theories" type="main">
+				<word value="experience design" description="Experience design is the practice of designing products, processes, services, events, and environments -- each of which is a human experience -- based on the consideration of an individual's or group's needs, desires, beliefs, knowledge, skills, experiences, and perceptions." />
+				<word value="interaction design" description="Een ontwerpdiscipline die zich bezighoudt met het gebied waarin mens en systeem elkaar tegenkomen; elkaar ontmoeten. Over de ontmoeting, oftewel de interactie (dus de mens doet iets met een apparaat en andersom), wordt goed nagedacht en vervolgens tot stand gebracht door het ontwerpen van de interface en de achterliggende inhoud en structuur van een systeem." />
+				<word value="don't make me think" description="'Don't Make Me Think' is een boek door Steve Krug over menselijke computer interactie en web usability." />
+				<word value="wisdom of crowds" description="'The Wisdom of Crowds: Why the Many Are Smarter Than the Few and How Collective Wisdom Shapes Business, Economies, Societies and Nations', voor het eerst uitgebracht in 2004, is een boek geschreven door James Surowiecki." />
+				<word value="usability" description="Gebruiksvriendelijk is een concept dat door ergonomen wordt bestudeerd. Iets is gebruiksvriendelijk wanneer een gemiddelde eindgebruiker van bijvoorbeeld een product, zoals een website of een computerprogramma, het effectief, efficiënt en naar tevredenheid kan gebruiken." />
+				<word value="the paradox of choice" description="Observed in many cases is the paradox that more choices may lead to a poorer decision or a failure to make a decision at all. It is sometimes theorized to be caused by analysis paralysis, real or perceived, or perhaps from rational ignorance." />
+				<word value="the long tail" id="longtail" description="Een begrip dat wordt gebruikt om een grote hoeveelheid aanbod te beschrijven dat slechts een klein publiek of een niche dient, maar gezamenlijk een groter marktpotentieel heeft dan de marktleider op zich." />
+				<word value="lifehacking" description="Term die verwijst naar onconventioneel gebruik van ICT en andere simpele hulpmiddelen die je helpen om te gaan met overvloed aan informatie." />
+				<word value="purple cow" description="In his book 'Purple Cow: Transform Your Business by Being Remarkable', Seth Godin suggests that marketing as we have known it, dominated by what he refers to as the TV-industrial Complex churning out products to meet the market's need, and television advertising directing people to these products, is broken. The book claims that we have now moved into an era where markets are largely satisfied, and to be noticed a product and its marketing need to be remarkable to be seen at all, let alone to sell." />
+				<word value="viral marketing" description="Virale marketing is een marketingtechniek die poogt om bestaande sociale netwerken te exploiteren om zo de bekendheid van het merk te vergroten of positieve associaties te bewerkstelligen op een wijze die te vergelijken is met een virale epidemie. In die zin lijkt het op mond-tot-mondreclame die versterkt wordt door het internet, waardoor zeer snel en veelal op goedkope wijze een groot aantal mensen bereikt kan worden." />
+				<word value="guerilla marketing" description="Marketingtechniek die poogt om met beperkte middelen een groot resultaat te bereiken. De term is afkomstig uit de oorlogsvoering waar het Spaanse woord guerrilla gebruikt wordt om een bepaald type oorlog te beschrijven waarbij kleine groepen strijders een veel groter leger effectief op afstand weten te houden. De overeenkomst tussen situaties in het bedrijfsleven waar een kleine organisatie een veel grotere organisatie (vaak de marktleider) probeert te bevechten, leidt ertoe dat ook hierop de term guerrilla geplakt wordt. Een van de middelen die guerrillamarketeers kunnen gebruiken is het choqueren van mensen, waardoor zeer snel en veelal op goedkope wijze een groot aantal mensen bereikt kan worden. Een andere techniek die soms als guerrillacampagne ingezet wordt is virale marketing." />
+				<word value="buzz-marketing" description="Volgens sommige definties betreft mond-tot-mondreclame een lineair patroon waarbij informatie van zender naar ontvanger overgaat waarna de ontvanger uiteindelijk een nieuwe zender wordt. In deze definitie is het onderscheid tussen mond-tot-mond reclame en een buzz of hype het feit dat niet langer in lineaire patronen over het product gesproken wordt, maar dat opeens iedereen tegen iedereen over het product praat. In andere definities wordt dit onderscheid niet gemaakt en betreft het allebei vormen van mond-tot-mondreclame." />
+			</word>
+		</word>
+	</words>
+	<links>
+		
+		<link a="programmeren" b="werkwijze" />
+		<link a="databases" b="rubyonrails" />
+		<link a="databases" b="php" />
+		<link a="mysql" b="php" />
+		<link a="mysql" b="rubyonrails" />
+		<link a="ajax" b="framelib" />
+		<link a="ajax" b="javascript" />
+		<link a="html" b="javascript" />
+		<link a="html" b="css" />
+		<link a="actionscript" b="adobeflex" />
+		<link a="actionscript" b="adobeflash" />
+		<link a="adobeflex" b="adobeflash" />
+		<link a="adobeflex" b="openlaszlo" />
+		<link a="adobeflex" b="mssilverlight" />
+		<link a="mssilverlight" b="openlaszlo" />
+		
+		<link a="flickr" b="sharing" />
+		<link a="facebook" b="communities" />
+		<link a="wikipedia" b="sharing" />
+		<link a="wikipedia" b="wikis" />
+		<link a="twitter" b="microblogging" />
+		<link a="socialbookmarking" b="delicious" />
+		<link a="socialbookmarking" b="blinklist" />
+		<link a="rss" b="netvibes" />
+		<link a="rss" b="igoogle" />
+		<link a="googlemapsapi" b="apis" />
+		
+		<link a="web20" b="collaboration" />
+		<link a="blogs" b="microblogging" />
+		<link a="blogs" b="communities" />
+		<link a="werkwijze" b="socialsoftware" />
+		<link a="werkwijze" b="sharing" />
+		<link a="usergeneratedcontent" b="tagging" />
+		
+		<link a="gastcolleges" b="gastdocenten" />
+		<link a="prototyping" b="theories" />
+		
+		<link a="experiencedesign" b="interactiondesign" />
+		<link a="experiencedesign" b="werkwijze" />
+		<link a="interactiondesign" b="werkwijze" />
+		<link a="usability" b="werkwijze" />
+		<link a="usability" b="interactiondesign" />
+		<link a="usability" b="flowchart" />
+		<link a="usability" b="fo" />
+		<link a="usability" b="dontmakemethink" />
+		<link a="usability" b="theparadoxofchoice" />
+		<link a="fo" b="go" />
+		<link a="fo" b="to" />
+		<link a="fo" b="flowchart" />
+		<link a="fo" b="wireframe" />
+		<link a="guerillamarketing" b="viralmarketing" />
+		<link a="guerillamarketing" b="buzzmarketing" />
+		<link a="viralmarketing" b="buzzmarketing" />
+		
+	</links>
+</mindmap>

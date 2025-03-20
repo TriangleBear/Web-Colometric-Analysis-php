@@ -1,0 +1,9 @@
+
+ToolTip{
+    font-family:            arial;
+    font-size:              11px;
+    color:                  #000000;
+    background-color:       #FFFFFF;
+    background-alpha:       0.9;
+    borderSkin:             ClassReference("nl.fxc.skins.FXCToolTip");
+}
