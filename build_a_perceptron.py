@@ -34,7 +34,7 @@ class Perceptron:
         # INSERT YOUR CODE HERE
         totalSum = np.dot(self.weights,inputs)
         
-        print totalSum
+        print(totalSum)
         
         if totalSum > self.threshold:
             result=1
