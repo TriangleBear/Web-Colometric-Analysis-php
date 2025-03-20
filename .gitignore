@@ -857,3 +857,18 @@ Validation_class_distribution.png
 /com
 
 /Datasets
+
+# Ignore datasets and models
+datasets/
+models/
+
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+.env/
+.venv/
+
+# Ignore test outputs
+tests/__pycache__/
