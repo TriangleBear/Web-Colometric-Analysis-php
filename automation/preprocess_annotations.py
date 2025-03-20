@@ -23,6 +23,6 @@ def preprocess_annotations(annotation_folder):
                 file.writelines(class_10_lines + other_class_lines)
 
 if __name__ == "__main__":
-    annotation_folder = r"/d:/Programming/urine_interpret/Datasets/Final Dataset I think/labels"
+    annotation_folder = "../datasets/final_dataset/labels"
     preprocess_annotations(annotation_folder)
     print("Annotation preprocessing completed.")
