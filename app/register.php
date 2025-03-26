@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $data = [
             'email' => $email,
-            'password' => $password, // Store plain text password
+            'password' => password_hash($password, PASSWORD_BCRYPT), // Hash the password, // Store plain text password
             'type' => 0, // Assuming default user type is 0
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
