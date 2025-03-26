@@ -1,6 +1,6 @@
 <?php 
 session_start();
-require_once 'DATABASE/function.php'; 
+require_once 'Web-Colometric-Analysis-php\DATABASE\function.php'; 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password']; // Use plain text password

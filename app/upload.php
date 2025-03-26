@@ -1,6 +1,6 @@
 <?php 
 session_start();
-require_once 'DATABASE/function.php'; 
+require_once 'Web-Colometric-Analysis-php\DATABASE\function.php'; 
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
