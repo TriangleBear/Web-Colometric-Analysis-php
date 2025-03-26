@@ -21,17 +21,17 @@ try:
     import automation.preprocess_annotations
     import automation.roboflowdl
     import automation.roboflowdl
-    import build_an_svm
-    import build_a_perceptron
-    import data_load
-    import models
-    import params
-    import perceptron_update_rule
-    import train
-    import train_model
-    import train_model_multiple_centers
-    import silhouette_eval
-    import svm_rbf_kernel
+    import Train.build_an_svm
+    import Train.build_a_perceptron
+    import Train.data_load
+    import Train.models
+    import Train.params
+    import Train.perceptron_update_rule
+    import Train.train
+    import Train.train_model
+    import Train.train_model_multiple_centers
+    import Train.silhouette_eval
+    import Train.svm_rbf_kernel
 
 except Exception as e:
     print(e)
@@ -272,9 +272,6 @@ def split_data(data):
 
 def augment_data(data):
     return [(x + 1, y + 1) for x, y in data]
-
-
-
 
 @app.route('/scan', methods=['POST'])
 def scan():
