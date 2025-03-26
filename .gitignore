@@ -872,3 +872,6 @@ __pycache__/
 
 # Ignore test outputs
 tests/__pycache__/
+
+.colometric
+/.colormetric
