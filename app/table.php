@@ -1,5 +1,5 @@
 <?php 
-require_once 'DATABASE/function.php'; 
+require_once 'Web-Colometric-Analysis-php\DATABASE\function.php'; 
 
 $table = isset($_GET['table']) ? $_GET['table'] : '';
 
