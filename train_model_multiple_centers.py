@@ -150,8 +150,8 @@ highest_gauss_kmedoids = np.max(history_gauss_kmedoids.history["val_acc"])
 
 results.append({"softmax-"+dataset+"-"+str(int(n_centers_per_class)): highest_softmax,
                 "gauss-kmeans-"+dataset+"-"+str(int(n_centers_per_class)): highest_gauss_kmeans,
-                "gauss-kmedoids-"+dataset+"-"+str(int(n_centers_per_class)): highest_gauss_kmedoids
-                "gauss-no-init-"+dataset+"-"+str(int(n_centers_per_class)): highest_gauss_no_init })
+                "gauss-kmedoids-"+dataset+"-"+str(int(n_centers_per_class)): highest_gauss_kmedoids,
+                "gauss-no-init-"+dataset+"-"+str(int(n_centers_per_class)): highest_gauss_no_init})
 
 del rbf_model
 del softmax_model
