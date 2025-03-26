@@ -46,7 +46,7 @@ CORS(app)
 
 CLIENT = InferenceHTTPClient(
     api_url="https://detect.roboflow.com",
-    api_key="1YVxTrTOYMlnH5WVRs8s"
+    api_key=""
 )
 
 CLASS_MAPPINGS = {
