@@ -1,375 +1,383 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from config import NUM_CLASSES  # Change to direct import since we're already in the Train directory
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+import tensorflow.keras as keras
+from tensorflow.keras import models
+from tensorflow.keras import layers
+from tensorflow.keras import optimizers
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.preprocessing import image
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import EarlyStopping, LearningRateScheduler, ModelCheckpoint
+from pyclustering.cluster.kmedoids import kmedoids
+from sklearn.cluster import KMeans
 
-class DoubleConv(nn.Module):
-    """Memory-optimized double convolution block with improved efficiency."""
-    def __init__(self, in_channels, out_channels, mid_channels=None, efficient=True):
-        super().__init__()
-        if not mid_channels:
-            mid_channels = out_channels
-        
-        # Use groups=1 for more efficient memory usage
-        self.double_conv = nn.Sequential(
-            nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(mid_channels, momentum=0.01, eps=1e-5),  # Reduced momentum for stability
-            nn.ReLU(inplace=True),
-            nn.Conv2d(mid_channels, out_channels, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels, momentum=0.01, eps=1e-5),
-            nn.ReLU(inplace=True)
-        )
 
-    def forward(self, x):
-        return self.double_conv(x)
+# RBF model main class.
 
-class Down(nn.Module):
-    """Downscaling with maxpool then double conv"""
-    def __init__(self, in_channels, out_channels):
-        super().__init__()
-        self.maxpool_conv = nn.Sequential(
-            nn.MaxPool2d(2),
-            DoubleConv(in_channels, out_channels)
-        )
+class RBF(Layer):
 
-    def forward(self, x):
-        return self.maxpool_conv(x)
+    def __init__(self, embedding_dim, n_keys_per_class, num_classes, kernel_type = "inverse", **kwargs):
 
-class Up(nn.Module):
-    """Upscaling then double conv"""
-    def __init__(self, in_channels, out_channels, bilinear=False):
-        super().__init__()
+        self.output_dim = embedding_dim
+        self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.1, seed=None)
+        self.num_classes = num_classes
+        self.embedding_dim = embedding_dim 
+        self.n_keys = n_keys_per_class*num_classes
+        self.n_keys_per_class = n_keys_per_class
+        self.kernel_type = kernel_type
+        super(RBF, self).__init__(**kwargs)
 
-        # if bilinear, use the normal convolutions to reduce the number of channels
-        if (bilinear):
-            self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-            self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
-        else:
-            self.up = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=2, stride=2)
-            self.conv = DoubleConv(in_channels, out_channels)
 
-    def forward(self, x1, x2):
-        x1 = self.up(x1)
-        # input is CHW
-        diffY = x2.size()[2] - x1.size()[2]
-        diffX = x2.size()[3] - x1.size()[3]
+    def build(self, input_shape):
 
-        x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,
-                        diffY // 2, diffY - diffY // 2])
-        x = torch.cat([x2, x1], dim=1)
-        return self.conv(x)
+        self.keys = self.add_weight(name='keys', 
+                                      shape=(self.n_keys_per_class, self.num_classes,  self.embedding_dim),
+                                      initializer=self.initializer,
+                                      trainable=True)     
+        super(RBF, self).build(input_shape)  
 
-class UNet(nn.Module):
-    def __init__(self, in_channels, out_channels, bilinear=False, dropout_prob=0.5):
-        super(UNet, self).__init__()
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.bilinear = bilinear
-        
-        # OPTIMIZATION: Reduce feature dimensions significantly for mobile GPU
-        factor = 2 if bilinear else 1
-        
-        # Reduced-size encoder path (32-64-128-256-512 instead of 64-128-256-512-1024)
-        self.inc = DoubleConv(in_channels, 32)
-        self.down1 = Down(32, 64)
-        self.down2 = Down(64, 128)
-        self.down3 = Down(128, 256)
-        self.down4 = Down(256, 512 // factor)
-        
-        # Dropout for regularization
-        self.dropout = nn.Dropout2d(p=dropout_prob)
-        
-        # Reduced-size decoder path
-        self.up1 = Up(512, 256 // factor, bilinear)
-        self.up2 = Up(256, 128 // factor, bilinear)
-        self.up3 = Up(128, 64 // factor, bilinear)
-        self.up4 = Up(64, 32, bilinear)
-        
-        # Output layer
-        self.outc = nn.Conv2d(32, out_channels, kernel_size=1)
-        
-        # Initialize weights to avoid exploding losses
-        self._init_weights()
+
+    def call(self, x):
+
+        keys2 = tf.reshape(self.keys, (-1, self.embedding_dim))
+        K = self.kernel(keys2, x)
+
+        inner_logits = tf.transpose(tf.reduce_sum(tf.reshape(K, (self.n_keys_per_class, self.num_classes, -1)), axis=0))
+        sum_inner_logits = tf.reduce_sum(inner_logits, axis=1)
+        output = inner_logits / tf.reshape(sum_inner_logits, (-1, 1))
+        return output
     
-    def _init_weights(self):
-        """Initialize model weights for stable training."""
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
-        # Store features from encoder path for skip connections
-        x1 = self.inc(x)
-        x2 = self.down1(x1)
-        x3 = self.down2(x2)
-        x4 = self.down3(x3)
-        x5 = self.down4(x4)
-        
-        # Apply dropout at the bottleneck
-        x5 = self.dropout(x5)
-        
-        # Decoder path with skip connections
-        x = self.up1(x5, x4)
-        # Clear x4 from memory
-        del x4
-        
-        x = self.up2(x, x3)
-        # Clear x3 from memory
-        del x3
-        
-        x = self.up3(x, x2)
-        # Clear x2 from memory
-        del x2
-        
-        x = self.up4(x, x1)
-        # Clear x1 from memory
-        del x1
-        
-        # Final output layer
-        x = self.outc(x)
-        
-        return x
-
-class YOLOHead(nn.Module):
-    """Memory-optimized YOLO-style detection head."""
-    def __init__(self, in_channels, num_classes):
-        super(YOLOHead, self).__init__()
-        # OPTIMIZATION: Reduce intermediate channels (1.5x instead of 2x)
-        mid_channels = int(in_channels * 1.5)
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(mid_channels, momentum=0.01),
-            nn.LeakyReLU(0.1, inplace=True),
-            nn.Conv2d(mid_channels, num_classes, kernel_size=1)
-        )
-        
-        # Initialize weights with Kaiming initialization
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='leaky_relu', a=0.2)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
+    def get_keys(self):
+        return self.get_weights()[0]
     
-    def forward(self, x):
-        features = self.conv(x)
-        return features
-
-class UNetYOLO(nn.Module):  
-    def __init__(self, in_channels, out_channels, dropout_prob=0.5):  
-        """Memory-optimized model for RTX 4050 mobile.""" 
-        super(UNetYOLO, self).__init__()
-        self.unet = UNet(in_channels, 32, bilinear=False, dropout_prob=dropout_prob)  # Reduced to 32 features
-        
-        # Expose decoder layers
-        self.decoder = nn.ModuleList([self.unet.up1, self.unet.up2, self.unet.up3, self.unet.up4])
-        
-        # Add batch normalization after UNet for better stability
-        self.bn = nn.BatchNorm2d(32, momentum=0.01)
-        
-        # YOLO head with memory optimization
-        self.yolo_head = YOLOHead(32, out_channels)
-        
-        # Memory-efficient attention module
-        self.class_attention = ClassAttentionModule(32, out_classes=min(4, out_channels))  # Reduce attention classes
-
-        # Streamlined auxiliary classifier
-        self.aux_classifier = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
-            nn.Flatten(),
-            nn.Linear(32, 64),  # Reduced hidden dimension
-            nn.ReLU(True),
-            nn.Dropout(dropout_prob),
-            nn.Linear(64, out_channels)
-        )
-        
-        # Specialized heads with reduced parameters
-        self.specialized_heads = nn.ModuleDict({
-            'strip': nn.Sequential(
-                nn.Conv2d(32, 32, kernel_size=3, padding=1, bias=False),  # Reduced channels
-                nn.BatchNorm2d(32, momentum=0.01),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(32, 1, kernel_size=1)
-            ),
-            'background': nn.Sequential(
-                nn.Conv2d(32, 32, kernel_size=3, padding=1, bias=False),  # Reduced channels
-                nn.BatchNorm2d(32, momentum=0.01),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(32, 1, kernel_size=1)
-            )
-        })
-
-        self._init_weights()
-        
-        # Enable gradient checkpointing to save memory
-        self.use_checkpointing = True
-
-    def _init_weights(self):
-        # Initialization for better convergence
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 0.01)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
+    def set_keys(self, keys):
+        self.set_weights([keys])
     
-    def forward(self, x):
-        # Memory-efficient forward pass with explicit cleanup
-        if self.use_checkpointing and self.training:
-            # Use gradient checkpointing during training to save memory
-            features = torch.utils.checkpoint.checkpoint(self.unet, x)
-        else:
-            features = self.unet(x)
-        
-        features = self.bn(features)
-        
-        # Apply class-specific attention
-        attended_features = self.class_attention(features)
-        
-        # Get segmentation map from YOLO head
-        segmentation_map = self.yolo_head(attended_features)
-        
-        # Get specialized outputs with memory-efficient approach
-        if self.training:
-            strip_output = self.specialized_heads['strip'](features)
-            bg_output = self.specialized_heads['background'](features)
-            
-            # Replace the corresponding channels in segmentation map
-            segmentation_map[:, 11:12, :, :] = strip_output  # Class 11 is Strip
-            segmentation_map[:, 9:10, :, :] = bg_output      # Class 9 is Background
-            
-            # Get auxiliary classification output
-            aux_output = self.aux_classifier(features)
-            
-            # Clean up memory
-            del attended_features, features
-            torch.cuda.empty_cache()
-            
-            return segmentation_map, aux_output, strip_output, bg_output
-        else:
-            # Memory-efficient inference
-            strip_output = self.specialized_heads['strip'](features)
-            bg_output = self.specialized_heads['background'](features)
-            
-            # Apply outputs directly
-            segmentation_map[:, 11:12, :, :] = strip_output  # Class 11 is Strip
-            segmentation_map[:, 9:10, :, :] = bg_output      # Class 9 is Background
-            
-            # Clean up memory
-            del attended_features, features, strip_output, bg_output
-            torch.cuda.empty_cache()
-            
-            return segmentation_map
+    # Kernel Functions
+    
+    def kernel(self, keys, x):
+        return {
+            'gauss': self.kernel_gauss(keys, x),
+            'inverse': self.kernel_inverse(keys, x)
+        }.get(self.kernel_type, self.kernel_inverse(keys, x))
 
-# NEW: Add a class attention module to focus on underrepresented classes
-class ClassAttentionModule(nn.Module):
-    """Memory-efficient class attention module."""
-    def __init__(self, in_channels, num_classes):
-        super(ClassAttentionModule, self).__init__()
-        # OPTIMIZATION: Reduce intermediate channels
-        reduced_channels = max(8, in_channels // 8)
-        
-        self.attention_conv = nn.Sequential(
-            nn.Conv2d(in_channels, num_classes, kernel_size=1, bias=False),
-            nn.Sigmoid()
-        )
-        self.channel_attention = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(in_channels, reduced_channels, kernel_size=1, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(reduced_channels, in_channels, kernel_size=1, bias=False),
-            nn.Sigmoid()
-        )
-        
-    def forward(self, x):
-        # Generate class-specific attention weights
-        channel_weights = self.channel_attention(x)
-        
-        # Apply attention mechanism
-        attended_features = x * channel_weights
-        
-        return attended_features
+    def sq_distance(self, A, B):
+        ''' Square Distance.
+        '''
+        row_norms_A = tf.reduce_sum(tf.square(A), axis=1)
+        row_norms_A = tf.reshape(row_norms_A, [-1, 1])  # Column vector.
 
-# Add a more memory-efficient LiteUNet for mobile GPU
-class LiteUNet(nn.Module):
-    """Ultra-lightweight UNet for RTX 4050 mobile."""
-    def __init__(self, in_channels, out_channels, dropout_prob=0.3):
-        super(LiteUNet, self).__init__()
-        
-        # Even more reduced feature dimensions
-        self.inc = DoubleConv(in_channels, 24)
-        self.down1 = Down(24, 48)
-        self.down2 = Down(48, 96)
-        self.down3 = Down(96, 192)
-        
-        self.dropout = nn.Dropout2d(p=dropout_prob)
-        
-        self.up1 = Up(192, 96)
-        self.up2 = Up(96, 48)
-        self.up3 = Up(48, 24)
-        
-        self.outc = nn.Conv2d(24, out_channels, kernel_size=1)
-        
-        self._init_weights()
-        
-        # Enable gradient checkpointing
-        self.use_checkpointing = True
-        
-    def _init_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
+        row_norms_B = tf.reduce_sum(tf.square(B), axis=1)
+        row_norms_B = tf.reshape(row_norms_B, [1, -1])  # Row vector.
 
-    def forward(self, x):
-        # Memory-efficient forward pass with explicit cleanup
-        if self.use_checkpointing and self.training:
-            # Use gradient checkpointing during training
-            x1 = self.inc(x)
-            x2 = torch.utils.checkpoint.checkpoint(self.down1, x1)
-            x3 = torch.utils.checkpoint.checkpoint(self.down2, x2)
-            x4 = torch.utils.checkpoint.checkpoint(self.down3, x3)
-        else:
-            x1 = self.inc(x)
-            x2 = self.down1(x1)
-            x3 = self.down2(x2)
-            x4 = self.down3(x3)
-        
-        x4 = self.dropout(x4)
-        
-        x = self.up1(x4, x3)
-        del x3, x4
-        torch.cuda.empty_cache()
-        
-        x = self.up2(x, x2)
-        del x2
-        torch.cuda.empty_cache()
-        
-        x = self.up3(x, x1)
-        del x1
-        torch.cuda.empty_cache()
-        
-        x = self.outc(x)
-        
-        return x
+        return row_norms_A - 2 * tf.matmul(A, tf.transpose(B)) + row_norms_B
+
+    def kernel_inverse(self, A,B):
+        ''' Inverse Kernel.
+        '''
+        d = self.sq_distance(A,B)
+        o = tf.math.reciprocal(d+1)
+        return o
+    
+    def kernel_cos(self, A,B):
+        ''' Cosine Similarity.
+        '''
+        normalize_A = tf.nn.l2_normalize(A,1)        
+        normalize_B = tf.nn.l2_normalize(B,1)
+        cossim = tf.matmul(normalize_B, tf.transpose(normalize_A))
+        return tf.transpose(cossim)
+      
+    def kernel_gauss(self, A,B):
+        ''' Gaussian Kernel.
+        '''
+        d = self.sq_distance(A,B)
+        o = tf.exp(-d/100)
+        return o
+
+
+# Relaxed Similary / Soft Triple Loss model main class.
+
+class RelaxedSimilarity(Layer):
+
+    def __init__(self, emb_size, n_centers, n_classes, gamma=0.1, **kwargs):
+        self.initializer = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.1, seed=None)
+        self.emb_size = emb_size
+        self.gamma = gamma
+        self.n_centers = n_centers
+        self.n_classes = n_classes
+        super(RelaxedSimilarity, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        self.keys = self.add_weight(name='keys', 
+                                      shape=(self.n_centers, self.emb_size, self.n_classes),
+                                      initializer=self.initializer,
+                                      trainable=True)     
+        super(RelaxedSimilarity, self).build(input_shape)
+
+    def call(self, X):
+
+        X_n = tf.math.l2_normalize(X, axis=1)
+        W_n = tf.math.l2_normalize(self.keys, axis=1)
+        inner_logits = tf.einsum('ie,kec->ikc', X_n, W_n)
+        inner_SoftMax = tf.nn.softmax((1/self.gamma)*inner_logits, axis=1)
+        output = tf.reduce_sum( tf.multiply(inner_SoftMax, inner_logits), axis=1)
+        return output
+
+
+# Loss Functions
+
+def custom_loss(layer, sigma=0.01, custom=1):
+    ''' Create a loss function that adds the MSE loss to the mean of all 
+        squared activations of a specific layer. Also possible single 
+        Cross Entropy according to the 'custom' parameter.
+        sigma  -> Regularization parameter.
+        custom -> 1 if custom mode. 0 if normal Cross Entropy.
+        Returns a Loss Function.
+    '''
+    def loss(y_true,y_pred):
+      if(custom==1):
+        flatten_keys = keys2 = tf.reshape(layer.keys, (-1, layer.embedding_dim))
+        return keras.losses.categorical_crossentropy(y_true=y_true, y_pred=y_pred)+sigma*tf.reduce_sum(layer.kernel(flatten_keys, flatten_keys))# + sigma*tf.reduce_mean(layer.kernel(layer.keys, layer.keys) , axis=-1)
+      else:
+        return keras.losses.categorical_crossentropy(y_true=y_true, y_pred=y_pred)
+    return loss
+
+def SoftTripleLoss(layer, lamb=5, delta=0.01):
+    ''' Soft Triple Loss.
+        lambda -> Lambda value according to STL paper.
+        delta  -> Delta Value according to STL paper.
+        Returns a Loss Function.
+    '''
+    def loss(y_true, y_pred):
+      s = lamb*(y_pred - delta*y_true)
+      outer_SoftMax = tf.nn.softmax(s)
+      soft_triple_loss = -tf.reduce_sum(tf.log(tf.reduce_sum(tf.multiply(outer_SoftMax, y_true), axis=1)))
+      return soft_triple_loss
+    return loss
+
+
+# Model Training Functions
+
+def sample_train(x_train, y_train, pct):
+    ''' Sample an specific data percentage of the dataset.
+        x_train, y_train    -> Train data.
+        pct                 -> Data Percentage.
+    '''
+    print("Train_pct=", pct)
+    n_train = x_train.shape[0]
+    idx = np.arange(n_train)
+    np.random.shuffle(idx)
+
+    train_samples = int(pct*n_train)
+    x_train_pct = x_train[idx][:train_samples]
+    y_train_pct = y_train[idx][:train_samples]
+
+    return x_train_pct, y_train_pct
+
+def print_params(feature_extractor, embedding_dim, n_centers_per_class, n_classes, lr, 
+                sigma, batch_size, epochs, dataset, input_shape, patience):
+    ''' Print current parameters setup of the model.
+    '''
+    print(  "embedding_dim          =  ", embedding_dim, "\n",
+            "n_centers_per_class    =  ", n_centers_per_class, "\n",
+            "n_classes              =  ", n_classes, "\n",
+            "batch_size             =  ", batch_size, "\n",
+            "lr                     =  ", lr, "\n",
+            "epochs                 =  ", epochs, "\n",
+            "sigma                  =  ", sigma, "\n",
+            "n_output               =  ", n_classes, "\n",
+            "feature_extractor      =  ", feature_extractor, "\n",
+            "dataset                =  ", dataset, "\n",
+            "input_shape            =  ", input_shape, "\n",
+            "patience               =  ", patience)
+    
+def get_initial_weights(embedding, x, y, n_clusters, n_classes, embedding_dim, 
+                        init_method= "KMEANS", n_init=20, max_iter=200):
+    ''' Initialize the weights of the model depending on the given initialization 
+        method (K-means or K-Medoids).
+    '''
+    embedding_outputs = embedding.predict(x)
+    centers = np.zeros([n_clusters, n_classes, embedding_dim])
+    
+    if init_method=="KMEANS":
+        for i in range(n_classes):
+            kmeans = KMeans(n_clusters=n_clusters, random_state=0, n_init= n_init, max_iter =max_iter)
+            x_class = embedding_outputs[np.where(np.argmax(y,1)==i)]
+            centers[:, i, :] = kmeans.fit(x_class).cluster_centers_
+
+    elif init_method =="KMEDOIDS":
+        for i in range(n_classes):
+            x_class = embedding_outputs[np.where(np.argmax(y,1)==i)]
+            initial_medoids = np.random.randint(low=0, high= x_class.shape[0], size=n_clusters)
+            cluster = kmedoids(x_class, initial_medoids)
+            centers_idx = cluster.process().get_medoids()
+            centers[:, i, :] = embedding_outputs[centers_idx]
+
+    else:
+        raise "Not implemented"
+
+    return centers
+
+
+# Model Construction functions
+
+def construct_models (feature_extractor, embedding_dim, n_centers_per_class, 
+                        n_classes, lr, sigma, kernel_type = "inverse"):
+    ''' Creates an RBF Model.
+        feature_extractor   -> Feature stractor used (CONVNET or RESNET).
+        embedding_dim       -> Size of the output Embedding.
+        n_centers_per_class -> Number of Centers per class.
+        n_classes           -> Number of Classes.
+        lr                  -> Learning Rate.
+        sigma               -> Regularization parameter.
+        kerney_type         -> Used kernel (Inverse, Cosine, Gauss).
+        Returns a training model.
+    '''
+    if feature_extractor == "RESNET":
+
+        conv_base = ResNet50(weights='imagenet', include_top=False, input_shape=(200, 200, 3))
+        input = layers.Input(shape=( 32,32,3,))
+        x=layers.UpSampling2D((2,2) )(input)
+        x=layers.UpSampling2D((2,2))(x)
+        x=layers.UpSampling2D((2,2))(x)
+        x=conv_base(x)
+        x=layers.Flatten()(x)
+        x=layers.BatchNormalization()(x)
+        x=layers.Dense(512, activation='relu')(x)
+        x=layers.Dropout(0.5)(x)
+        x=layers.BatchNormalization()(x)
+        x=layers.Dense(embedding_dim, activation='relu')(x)
+        x=layers.BatchNormalization()(x)
+
+        varkeys_output = RBF(embedding_dim, n_centers_per_class, n_classes, kernel_type)(x)
+        plain_output = layers.Activation('softmax')(layers.Dense(n_classes)(x))
+
+        softmax_model = Model(inputs=input, outputs=plain_output)
+        rbf_model = Model(inputs=input, outputs=varkeys_output)
+        embeddings = Model(inputs=input, outputs=x)
+
+        rbf_model.compile(loss=custom_loss(rbf_model.layers[-1], sigma, 1),
+                    optimizer = optimizers.RMSprop(lr=lr),
+                    metrics=['accuracy'])
+
+        softmax_model.compile(loss= keras.losses.categorical_crossentropy,
+                    optimizer = optimizers.RMSprop(lr=lr),
+                    metrics=['accuracy'])
+
+    else:
+
+        layers_dim=[32, 64, 512]
+        input = layers.Input(shape=( 32,32,3,))
+        x = layers.Conv2D(layers_dim[0], (3, 3), padding='same', input_shape=[32,32,3])(input)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[0], (3,3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[0], (3, 3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.MaxPooling2D(pool_size=(2, 2))(x)
+        x = layers.Dropout(0.25)(x)
+
+        x = layers.Conv2D(layers_dim[1], (3, 3), padding='same')(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[1], (3, 3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.MaxPooling2D(pool_size=(2, 2))(x)
+        x = layers.Dropout(0.25)(x)
+
+        x = layers.Flatten()(x)
+        x = layers.Dense(layers_dim[2])(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Dropout(0.5)(x)
+        x = layers.Dense(embedding_dim)(x)
+        x = layers.Activation('relu')(x)
+        x = layers.BatchNormalization()(x)
+
+        varkeys_output = RBF(embedding_dim, n_centers_per_class, n_classes, kernel_type)(x)
+        plain_output = layers.Activation('softmax')(layers.Dense(n_classes)(x))
+
+        softmax_model = Model(inputs=input, outputs=plain_output)
+        rbf_model = Model(inputs=input, outputs=varkeys_output)
+        embeddings = Model(inputs=input, outputs=x)
+
+        rbf_model.compile(loss=custom_loss(rbf_model.layers[-1], sigma, 1),
+            optimizer = optimizers.RMSprop(lr=lr),
+            metrics=['accuracy'])
+
+        softmax_model.compile(loss= keras.losses.categorical_crossentropy,
+                    optimizer = optimizers.RMSprop(lr=lr),
+                    metrics=['accuracy'])
+
+    return rbf_model, softmax_model, embeddings
+
+
+def construct_model_STL(feature_extractor, embedding_dim, n_centers_per_class, 
+                        n_classes, lr, gamma):
+    ''' Creates a Soft Triple Loss Model.
+        feature_extractor   -> Feature stractor used (CONVNET or RESNET).
+        embedding_dim       -> Size of the output Embedding.
+        n_centers_per_class -> Number of Centers per class.
+        n_classes           -> Number of Classes.
+        lr                  -> Learning Rate.
+        gamma               -> Gamma parameter according to STL paper.
+        Returns a training model.
+    '''
+    if feature_extractor == "RESNET":
+
+        conv_base = ResNet50(weights='imagenet', include_top=False, input_shape=(200, 200, 3))
+        input = layers.Input(shape=( 32,32,3,))
+        x=layers.UpSampling2D((2,2) )(input)
+        x=layers.UpSampling2D((2,2))(x)
+        x=layers.UpSampling2D((2,2))(x)
+        x=conv_base(x)
+        x=layers.Flatten()(x)
+        x=layers.BatchNormalization()(x)
+        x=layers.Dense(512, activation='relu')(x)
+        x=layers.Dropout(0.5)(x)
+        x=layers.BatchNormalization()(x)
+        x=layers.Dense(embedding_dim, activation='relu')(x)
+        x=layers.BatchNormalization()(x)
+
+        x = RelaxedSimilarity(embedding_dim, n_centers_per_class, n_classes, gamma)(x)
+        output = layers.Softmax()(x)
+        model = Model(inputs=input, outputs=output)
+
+        model.compile(optimizer=optimizers.RMSprop(lr=lr), loss=SoftTripleLoss(model.layers[-2]), metrics=['acc'])
+
+    else:
+        layers_dim=[32, 64, 512]
+        input = layers.Input(shape=( 32,32,3,))
+        x = layers.Conv2D(layers_dim[0], (3, 3), padding='same', input_shape=[32,32,3])(input)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[0], (3,3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[0], (3, 3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.MaxPooling2D(pool_size=(2, 2))(x)
+        x = layers.Dropout(0.25)(x)
+
+        x = layers.Conv2D(layers_dim[1], (3, 3), padding='same')(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(layers_dim[1], (3, 3))(x)
+        x = layers.Activation('relu')(x)
+        x = layers.MaxPooling2D(pool_size=(2, 2))(x)
+        x = layers.Dropout(0.25)(x)
+
+        x = layers.Flatten()(x)
+        x = layers.Dense(layers_dim[2])(x)
+        x = layers.Activation('relu')(x)
+        x = layers.Dropout(0.5)(x)
+        x = layers.Dense(embedding_dim)(x)
+        x = layers.Activation('relu')(x)
+        x = layers.BatchNormalization()(x)
+
+        x = RelaxedSimilarity(embedding_dim, n_centers_per_class, n_classes, gamma)(x)
+        output = layers.Softmax()(x)
+        model = Model(inputs=input, outputs=output)
+        model.compile(optimizer=optimizers.RMSprop(lr=lr), loss=SoftTripleLoss(model.layers[-2]), metrics=['acc'])
+
+    return model
+
