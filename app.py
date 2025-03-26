@@ -1,15 +1,11 @@
 from flask import Flask, request, jsonify
 import base64
 import cv2
-import endpoint
+import endpoints
 import numpy as np
 from inference_sdk import InferenceHTTPClient
 from flask_cors import CORS
 import matplotlib.pyplot as plt
-from flask import Flask, request, jsonify
-import base64
-import cv2
-import numpy as np
 from inference_sdk import InferenceHTTPClient
 from flask_cors import CORS
 from sklearn import svm
